@@ -1,0 +1,11 @@
+.aliceblue {
+  background-color: rgb(114, 168, 215);
+}
+.form_container {
+  width: 30%;
+}
+@media screen and (max-width: 1000px) {
+  .form_container {
+    width: 45%;
+  }
+}
