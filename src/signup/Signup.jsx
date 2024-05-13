@@ -12,11 +12,11 @@ const Signup = () => {
 
   const [isRegistering, setIsRegistering] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isPasswordValid, setIsPasswordValid] = useState(false);
 
   const navigate = useNavigate();
 
   const { userLoggedIn } = useAuth();
-  // console.log(userLoggedIn);
 
   const resetForm = () => {
     setName("");
@@ -25,11 +25,22 @@ const Signup = () => {
     setConfirmPassword("");
     setErrorMessage("");
     setIsRegistering(false);
+    setIsPasswordValid(false);
   };
 
   useEffect(() => {
     resetForm();
   }, []);
+
+  const handlePasswordChange = (e) => {
+    const { value } = e.target;
+    setPassword(value);
+    setIsPasswordValid(
+      /^(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[!@#$%^&*()_+])(?=.*?[a-z]).{8,}$/.test(
+        value
+      )
+    );
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,7 +49,13 @@ const Signup = () => {
       if (password !== confirmPassword) {
         setErrorMessage("Passwords do not match!");
         setIsRegistering(false);
-        // resetForm();
+        return;
+      }
+      if (!isPasswordValid) {
+        setErrorMessage(
+          "Password must be at least 8 characters long and start with a capital letter."
+        );
+        setIsRegistering(false);
         return;
       }
       try {
@@ -105,11 +122,22 @@ const Signup = () => {
                 name="password"
                 id="password"
                 placeholder="Enter password"
-                className="form-control col-md-3"
+                className={`form-control col-md-3 ${
+                  isPasswordValid ? "is-valid" : "is-invalid"
+                }`}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={handlePasswordChange}
                 required
               />
+              {isPasswordValid && (
+                <div className="valid-feedback">Password is valid.</div>
+              )}
+              {!isPasswordValid && (
+                <div className="invalid-feedback">
+                  Password must be at least 8 characters long and start with a
+                  capital letter.
+                </div>
+              )}
             </div>
             <div className="mb-2 row">
               <label htmlFor="confirm_password" className="mb-2">
