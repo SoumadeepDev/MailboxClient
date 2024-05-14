@@ -13,10 +13,12 @@ const Signup = () => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isPasswordValid, setIsPasswordValid] = useState(false);
+  const [isEmailValid, setIsEmailValid] = useState(true);
+  const [isConfirmPasswordValid, setIsConfirmPasswordValid] = useState(true);
 
   const navigate = useNavigate();
 
-  const { userLoggedIn } = useAuth();
+  const { userLoggedIn, currentUser } = useAuth();
 
   const resetForm = () => {
     setName("");
@@ -26,6 +28,8 @@ const Signup = () => {
     setErrorMessage("");
     setIsRegistering(false);
     setIsPasswordValid(false);
+    setIsEmailValid(true);
+    setIsConfirmPasswordValid(true);
   };
 
   useEffect(() => {
@@ -42,10 +46,28 @@ const Signup = () => {
     );
   };
 
+  const handleEmailChange = (e) => {
+    const { value } = e.target;
+    setEmail(value);
+    setIsEmailValid(validateEmail(value));
+  };
+
+  const validateEmail = (email) => {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email);
+  };
+
+  const handleConfirmPasswordChange = (e) => {
+    const { value } = e.target;
+    setConfirmPassword(value);
+    setIsConfirmPasswordValid(value === password);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isRegistering) {
       setIsRegistering(true);
+
       if (password !== confirmPassword) {
         setErrorMessage("Passwords do not match!");
         setIsRegistering(false);
@@ -58,9 +80,15 @@ const Signup = () => {
         setIsRegistering(false);
         return;
       }
+      if (!isEmailValid) {
+        setErrorMessage("Please enter a valid email address.");
+        setIsRegistering(false);
+        return;
+      }
       try {
         await doCreateUserWithEmailAndPassword(name, email, password);
         toast.success("Account is created successfully");
+        await currentUser.updateProfile({ displayName: name });
         resetForm();
       } catch (error) {
         setIsRegistering(false);
@@ -74,17 +102,17 @@ const Signup = () => {
       }
     }
   };
-
+  console.log(currentUser);
   return (
     <>
       {userLoggedIn && <Navigate to={"/"} replace={true} />}
 
-      <div className="login  template d-flex justify-content-center align-items-center vh-100 aliceblue">
+      <div className="login template d-flex justify-content-center align-items-center vh-100 aliceblue">
         <div className="form_container p-5 rounded bg-white">
           <form onSubmit={handleSubmit}>
             <h3 className="text-center">Create New Account</h3>
             <div className="mb-2 row">
-              <label htmlFor="name" className="mb-2 col-md-3  col-form-label">
+              <label htmlFor="name" className="mb-2 col-md-3 col-form-label">
                 Name
               </label>
               <input
@@ -107,12 +135,20 @@ const Signup = () => {
                 name="email"
                 id="email"
                 placeholder="Enter email"
-                className="form-control col-md-3"
+                className={`form-control col-md-3 ${
+                  isEmailValid ? "" : "is-invalid"
+                }`}
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={handleEmailChange}
                 required
               />
+              {!isEmailValid && (
+                <div className="invalid-feedback">
+                  Please enter a valid email address
+                </div>
+              )}
             </div>
+
             <div className="mb-2 row">
               <label htmlFor="password" className="mb-2">
                 Password
@@ -148,24 +184,20 @@ const Signup = () => {
                 name="confirm_password"
                 id="confirm_password"
                 placeholder="Enter same password again"
-                className="form-control col-md-3"
+                className={`form-control col-md-3 ${
+                  isConfirmPasswordValid ? "" : "is-invalid"
+                }`}
                 value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                onChange={handleConfirmPasswordChange}
                 required
               />
+              {!isConfirmPasswordValid && (
+                <div className="invalid-feedback">Passwords do not match</div>
+              )}
             </div>
-            <div className="mb-2">
-              <input
-                type="checkbox"
-                className="custom-control custom-checkbox"
-                id="check"
-              />
-              <label htmlFor="check" className="custom-input-label ms-2">
-                Remember me
-              </label>
-            </div>
+
             <div className="d-grip m-4">
-              <button className="btn btn-success  w-100  text-center  justify-content-center d-flex mx-auto">
+              <button className="btn btn-success w-100 text-center justify-content-center d-flex mx-auto">
                 Sign Up
               </button>
             </div>
@@ -176,10 +208,9 @@ const Signup = () => {
           )}
 
           <p className="text-right m-2">
-            {" "}
             already have an account ?
             <a href="/" className="m-2">
-              continue
+              Continue to Login
             </a>
           </p>
         </div>
@@ -187,4 +218,5 @@ const Signup = () => {
     </>
   );
 };
+
 export default Signup;

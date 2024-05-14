@@ -35,9 +35,9 @@ const Login = () => {
 
   return (
     <>
-      {userLoggedIn && <Navigate to={"/home"} replace={true} />}
+      {userLoggedIn && <Navigate to={"/emailverification"} replace={true} />}
 
-      <div className="login  template d-flex justify-content-center align-items-center vh-100 aliceblue">
+      <div className="login template d-flex justify-content-center align-items-center vh-100 aliceblue">
         <div className="form_container p-5 rounded bg-white">
           <form onSubmit={handleSubmit}>
             <h3 className="text-center">Welcome Back</h3>
@@ -71,16 +71,7 @@ const Login = () => {
                 required
               />
             </div>
-            <div className="mb-2">
-              <input
-                type="checkbox"
-                className="custom-control custom-checkbox"
-                id="check"
-              />
-              <label htmlFor="check" className="custom-input-label ms-2">
-                Remember me
-              </label>
-            </div>
+
             {errorMessage && (
               <span className="text-danger font-weight-bold">
                 {errorMessage}
@@ -94,7 +85,7 @@ const Login = () => {
           </form>
           <p className="text-right m-4">
             {" "}
-            <a href=""> Forgot Password?</a>
+            <a href="/forgotpassword"> Forgot Password?</a>
             <a href="/signup" className="m-2">
               Register New Account
             </a>

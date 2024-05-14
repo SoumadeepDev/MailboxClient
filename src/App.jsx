@@ -6,6 +6,8 @@ import Home from "./Components/Home";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AuthProvider } from "./context";
+import EmailVerificationPage from "./Components/EmailVerificationPage";
+import ForgotPassword from "./Components/ForgotPassword";
 
 function App() {
   return (
@@ -16,6 +18,11 @@ function App() {
           <Route path="/" exact element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/home" element={<Home />} />
+          <Route
+            path="/emailverification"
+            element={<EmailVerificationPage />}
+          />
+          <Route path="/forgotpassword" element={<ForgotPassword />} />
         </Routes>
       </AuthProvider>
     </Router>

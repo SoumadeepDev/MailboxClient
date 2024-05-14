@@ -24,8 +24,10 @@ export function AuthProvider({ children }) {
   }, []);
 
   async function initializeUser(user) {
+    console.log("User in context component", user);
     if (user) {
-      setCurrentUser({ ...user });
+      setCurrentUser({ ...user, displayName: user.displayName || "" });
+      console.log("user", user);
 
       // check if provider is email and password login
       const isEmail = user.providerData.some(
